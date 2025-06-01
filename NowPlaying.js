@@ -92,48 +92,50 @@ function blendWithGray([r, g, b], factor = 0.8) {
   ];
 }
 
+// Helper to apply palette to card and body
+function applyPaletteToCardAndBody(cardElement, primary, secondary) {
+  const muddyPrimary = blendWithGray(primary, 0.78);
+  const muddySecondary = blendWithGray(secondary, 0.8);
+
+  cardElement.style.background = `linear-gradient(90deg, rgb(${muddySecondary.join(',')}), rgb(${muddyPrimary.join(',')}))`;
+
+  const primaryStr = `rgb(${primary.join(',')})`;
+  const secondaryStr = `rgb(${secondary.join(',')})`;
+
+  cardElement.style.setProperty('--nowplaying-primary', primaryStr);
+  cardElement.style.setProperty('--nowplaying-title', secondaryStr);
+  cardElement.style.setProperty('--nowplaying-bright', secondaryStr);
+
+  setBodyGradient(primary, secondary);
+}
+
 function setCardGradientFromImage(imgElement, cardElement) {
   const colorThief = new ColorThief();
-  if (imgElement.complete && imgElement.naturalHeight !== 0) {
+
+  function setGradient() {
     const palette = colorThief.getPalette(imgElement, 2);
     if (palette && palette.length >= 2) {
-      const primary = palette[0];
-      const secondary = palette[1];
-
-      // Blend both with gray for a muddy look
-      const muddyPrimary = blendWithGray(primary, 0.78);
-      const muddySecondary = blendWithGray(secondary, 0.8);
-
-      cardElement.style.background = `linear-gradient(90deg, rgb(${muddySecondary.join(',')}), rgb(${muddyPrimary.join(',')}))`;
-
-      const primaryStr = `rgb(${primary.join(',')})`;
-      const secondaryStr = `rgb(${secondary.join(',')})`;
-
-      cardElement.style.setProperty('--nowplaying-primary', primaryStr);
-      cardElement.style.setProperty('--nowplaying-title', secondaryStr);
-      cardElement.style.setProperty('--nowplaying-bright', secondaryStr);
+      const [primary, secondary] = palette;
+      applyPaletteToCardAndBody(cardElement, primary, secondary);
     }
+  }
+
+  if (imgElement.complete && imgElement.naturalHeight !== 0) {
+    setGradient();
   } else {
-    imgElement.addEventListener('load', function handler() {
-      imgElement.removeEventListener('load', handler);
-      const palette = colorThief.getPalette(imgElement, 2);
-      if (palette && palette.length >= 2) {
-        const primary = palette[0];
-        const secondary = palette[1];
+    imgElement.addEventListener('load', setGradient, { once: true });
+  }
+}
 
-        const muddyPrimary = blendWithGray(primary, 0.5);
-        const muddySecondary = blendWithGray(secondary, 0.5);
-
-        cardElement.style.background = `linear-gradient(90deg, rgb(${muddySecondary.join(',')}), rgb(${muddyPrimary.join(',')}))`;
-
-        const primaryStr = `rgb(${primary.join(',')})`;
-        const secondaryStr = `rgb(${secondary.join(',')})`;
-
-        cardElement.style.setProperty('--nowplaying-primary', primaryStr);
-        cardElement.style.setProperty('--nowplaying-title', secondaryStr);
-        cardElement.style.setProperty('--nowplaying-bright', secondaryStr);
-      }
-    });
+function setBodyGradient(primary, secondary) {
+  const body = document.body;
+  if (primary && secondary) {
+    body.style.setProperty(
+      '--site-bg',
+      `linear-gradient(135deg, rgb(${secondary.join(',')}), rgb(${primary.join(',')}), #111 90%)`
+    );
+  } else {
+    body.style.setProperty('--site-bg', '#111');
   }
 }
 
@@ -147,8 +149,10 @@ function updateUI(nowPlaying) {
   const cardElement = document.getElementById('nowPlayingCard');
 
   let secondsPlayed = 0, minutesPlayed = 0, secondsTotal = 0, minutesTotal = 0;
-  let albumImageUrl = './images/albumCover.png';
   let songUrl = null;
+
+  // Hide the card until ready
+  if (cardElement) cardElement.style.visibility = 'hidden';
 
   if (nowPlaying && typeof nowPlaying === 'object' && nowPlaying.title) {
     secondsPlayed = Math.floor(nowPlaying.timePlayed / 1000);
@@ -159,22 +163,19 @@ function updateUI(nowPlaying) {
     minutesTotal = Math.floor(secondsTotal / 60);
     secondsTotal = secondsTotal % 60;
 
-    albumImageUrl = nowPlaying.albumImageUrl;
+    const albumImageUrl = nowPlaying.albumImageUrl;
     songUrl = nowPlaying.songUrl;
-
-    // Hide UI until image and colors are ready
-    cardElement.style.visibility = 'hidden';
 
     // Remove previous click listeners to avoid stacking
     albumImage.onclick = null;
     titleEl.onclick = null;
 
-    // Load image and then update everything at once
+    // Only update UI after image loads
     albumImage.onload = function () {
       setCardGradientFromImage(albumImage, cardElement);
 
       titleEl.textContent = nowPlaying.title;
-      artistEl.textContent = nowPlaying.artist;
+      artistEl.innerHTML = `<a href="${nowPlaying.artistUrl}" target="_blank" rel="noopener noreferrer">${nowPlaying.artist}</a>`;
 
       // Progress bar
       const percent = nowPlaying.timeTotal ? (nowPlaying.timePlayed / nowPlaying.timeTotal) * 100 : 0;
@@ -190,13 +191,19 @@ function updateUI(nowPlaying) {
         titleEl.onclick = () => window.open(songUrl, '_blank');
       }
 
-      // Show UI
-      cardElement.style.visibility = 'visible';
+      // Show the card
+      if (cardElement) cardElement.style.visibility = 'visible';
     };
 
-    // Set image src (triggers onload)
-    albumImage.src = albumImageUrl;
+    // Only set src if different to ensure onload fires
+    if (albumImage.src !== albumImageUrl) {
+      albumImage.src = albumImageUrl;
+    } else if (albumImage.complete && albumImage.naturalHeight !== 0) {
+      // If already loaded, manually trigger onload
+      albumImage.onload();
+    }
   } else {
+    // Only show the placeholder if there is no song playing
     albumImage.src = './images/albumCover.png';
     titleEl.textContent = 'No song playing';
     artistEl.textContent = '';
@@ -206,6 +213,7 @@ function updateUI(nowPlaying) {
     if (cardElement) {
       cardElement.style.setProperty('--nowplaying-primary', '#e94f7c');
       cardElement.style.setProperty('--nowplaying-dull', '#bdb6c7');
+      cardElement.style.visibility = 'visible';
     }
     albumImage.onclick = null;
     titleEl.onclick = null;
