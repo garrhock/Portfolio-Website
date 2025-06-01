@@ -8,15 +8,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  
   <div id="navbar"></div>
   <script src="navbar.js" defer></script>
-
-  <div class="three-column-layout">
-  <aside class="side-section left-section">
-    <div id="currently-playing"></div>
-    <script src="src/script.js" type="module"></script>
-  </aside>
 
   <div class="center-section">
     <section class="main-box">
@@ -84,12 +77,30 @@
       </div>
     </section>
     <script src="disable-animation.js"></script>
+    <section class="section no-border">
+      <div id="nowPlayingCard" class="nowPlayingCard">
+        <div class="nowPlayingContent">
+          <div id="nowPlayingImage" class="nowPlayingImage">
+            <img id="albumImage" crossorigin="anonymous" src="./images/albumCover.png" alt="Album" />
+          </div>
+          <div id="nowPlayingDetails" class="nowPlayingDetails">
+            <div id="nowPlayingTitle" class="nowPlayingTitle"></div>
+            <div id="nowPlayingArtist" class="nowPlayingArtist"></div>
+            <div class="nowPlayingTimeBar">
+              <span class="nowPlayingTimeStart" id="nowPlayingTimeStart"></span>
+              <div class="nowPlayingProgressBar">
+                <div class="nowPlayingProgress"></div>
+              </div>
+              <span class="nowPlayingTimeEnd" id="nowPlayingTimeEnd"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
+    <script src="disable-animation.js"></script>
+    <script src="nowPlaying.js"></script>
   </div>
-
-  <aside class="side-section right-section">
-    <!-- Right content here -->
-  </aside>
-</div>
-
-
+</body>
+</html>
  
