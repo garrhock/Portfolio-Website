@@ -1,3 +1,4 @@
+// --- Spotify API Setup ---
 const NOW_PLAYING_ENDPOINT = 'https://api.spotify.com/v1/me/player/currently-playing';
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
 
@@ -5,15 +6,13 @@ const client_id = '7e167a0ee1ef4863b4f3fd594d73b7bc';
 const client_secret = '58068859e28342eaa6bfeb891f1d4a22';
 const refresh_token = 'AQBMvznxTfbJIQtifVwVQbzLwH5AyF2tNmCL8Ac6MyQvEuQCDBYruaPX9SxXR5hwWkh92NS4Sil6N6DM4JuO07Cnht8fT0bdfELZXvjh_5DDV_xqX9uIyOm0sUBg26F6T38';
 
-// Base64 encode for authorization header
+// --- Helper Functions ---
 function base64Encode(str) {
   return btoa(str);
 }
 
-// Function to get access token using refresh token
 async function getAccessToken(client_id, client_secret, refresh_token) {
   const basic = base64Encode(`${client_id}:${client_secret}`);
-
   const body = new URLSearchParams();
   body.append('grant_type', 'refresh_token');
   body.append('refresh_token', refresh_token);
@@ -27,14 +26,10 @@ async function getAccessToken(client_id, client_secret, refresh_token) {
     body: body.toString()
   });
 
-  if (!response.ok) {
-    throw new Error('Failed to get access token');
-  }
-
+  if (!response.ok) throw new Error('Failed to get access token');
   return response.json();
 }
 
-// Function to fetch currently playing song
 async function getNowPlaying() {
   try {
     const { access_token } = await getAccessToken(client_id, client_secret, refresh_token);
@@ -45,12 +40,8 @@ async function getNowPlaying() {
       },
     });
 
-    if (response.status === 204) {
-      throw new Error('Currently Not Playing');
-    }
-    if (!response.ok) {
-      throw new Error('Unable to Fetch Song');
-    }
+    if (response.status === 204) throw new Error('Currently Not Playing');
+    if (!response.ok) throw new Error('Unable to Fetch Song');
 
     const song = await response.json();
 
@@ -75,7 +66,7 @@ async function getNowPlaying() {
     };
   } catch (error) {
     console.error('Error fetching currently playing song:', error);
-    return error.message;
+    return null;
   }
 }
 
@@ -84,7 +75,6 @@ function pad(num) {
 }
 
 function blendWithGray([r, g, b], factor = 0.8) {
-  // factor: 0 = full gray, 1 = original color
   return [
     Math.round(r * factor + 128 * (1 - factor)),
     Math.round(g * factor + 128 * (1 - factor)),
@@ -92,7 +82,6 @@ function blendWithGray([r, g, b], factor = 0.8) {
   ];
 }
 
-// Helper to apply palette to card and body
 function applyPaletteToCardAndBody(cardElement, primary, secondary) {
   const muddyPrimary = blendWithGray(primary, 0.78);
   const muddySecondary = blendWithGray(secondary, 0.8);
@@ -139,6 +128,7 @@ function setBodyGradient(primary, secondary) {
   }
 }
 
+// --- Main UI Update Function ---
 function updateUI(nowPlaying) {
   const albumImage = document.getElementById('albumImage');
   const titleEl = document.getElementById('nowPlayingTitle');
@@ -147,6 +137,7 @@ function updateUI(nowPlaying) {
   const timeStart = document.getElementById('nowPlayingTimeStart');
   const timeEnd = document.getElementById('nowPlayingTimeEnd');
   const cardElement = document.getElementById('nowPlayingCard');
+  const mask = document.getElementById('nowPlayingMask');
 
   let secondsPlayed = 0, minutesPlayed = 0, secondsTotal = 0, minutesTotal = 0;
   let songUrl = null;
@@ -155,6 +146,9 @@ function updateUI(nowPlaying) {
   if (cardElement) cardElement.style.visibility = 'hidden';
 
   if (nowPlaying && typeof nowPlaying === 'object' && nowPlaying.title) {
+    // Show mask only if paused (Spotify open, song loaded, but not playing)
+    if (mask) mask.style.opacity = nowPlaying.isPlaying ? '0' : '1';
+
     secondsPlayed = Math.floor(nowPlaying.timePlayed / 1000);
     minutesPlayed = Math.floor(secondsPlayed / 60);
     secondsPlayed = secondsPlayed % 60;
@@ -168,13 +162,13 @@ function updateUI(nowPlaying) {
 
     // Remove previous click listeners to avoid stacking
     albumImage.onclick = null;
-    titleEl.onclick = null;
 
     // Only update UI after image loads
     albumImage.onload = function () {
       setCardGradientFromImage(albumImage, cardElement);
 
-      titleEl.textContent = nowPlaying.title;
+      // Only the <a> is clickable, not the whole title row
+      titleEl.innerHTML = `<a id="nowPlayingTitleLink" href="${songUrl}" target="_blank" rel="noopener noreferrer">${nowPlaying.title}</a>`;
       artistEl.innerHTML = `<a href="${nowPlaying.artistUrl}" target="_blank" rel="noopener noreferrer">${nowPlaying.artist}</a>`;
 
       // Progress bar
@@ -185,10 +179,9 @@ function updateUI(nowPlaying) {
       if (timeStart) timeStart.textContent = `${pad(minutesPlayed)}:${pad(secondsPlayed)}`;
       if (timeEnd) timeEnd.textContent = `${pad(minutesTotal)}:${pad(secondsTotal)}`;
 
-      // Make album cover and title clickable
+      // Make album cover clickable
       if (songUrl) {
         albumImage.onclick = () => window.open(songUrl, '_blank');
-        titleEl.onclick = () => window.open(songUrl, '_blank');
       }
 
       // Show the card
@@ -203,6 +196,9 @@ function updateUI(nowPlaying) {
       albumImage.onload();
     }
   } else {
+    // Hide mask when nothing is playing or Spotify is closed
+    if (mask) mask.style.opacity = '0';
+
     // Only show the placeholder if there is no song playing
     albumImage.src = './images/albumCover.png';
     titleEl.textContent = 'No song playing';
@@ -216,11 +212,10 @@ function updateUI(nowPlaying) {
       cardElement.style.visibility = 'visible';
     }
     albumImage.onclick = null;
-    titleEl.onclick = null;
   }
 }
 
-// Refresh data every second
+// --- Refresh Data Every Second ---
 async function refreshNowPlaying() {
   const nowPlaying = await getNowPlaying();
   updateUI(nowPlaying);
