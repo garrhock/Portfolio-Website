@@ -277,13 +277,13 @@ body {
 /* Contact & Email */
 .contact-buttons-grid,
 .email-form {
-  max-width: 800px;
+  margin: 40px auto;
   width: 100%;
-  margin: 0 auto;
 }
 
 .contact-buttons-grid {
   display: grid;
+  max-width: 800px;  
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 0.5rem;
@@ -347,8 +347,8 @@ body {
   border-radius: 1rem;
   border: 1.5px solid #222;
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  margin: 0 auto;
   padding: 1.5rem 1rem;
+  max-width: calc(800px - 1.5rem);
 }
 
 .email-form label {
@@ -442,16 +442,18 @@ body {
 }
 
 .nowPlayingTitle {
-  font-weight: 600;
-  font-size: 1.15rem;
+  font-weight: 700;
+  font-size: 2rem;
   color: var(--nowplaying-title, #fff);
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   transition: color 0.4s cubic-bezier(0.33, 1, 0.68, 1);
-  /* Remove cursor: pointer; */
-  pointer-events: none; /* <--- Add this */
+  pointer-events: none;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.18), 0 1px 0 #222;
+  margin-bottom: 0.15em;
+  line-height: 1.15;
 }
 
 .nowPlayingTitle a {
@@ -464,26 +466,34 @@ body {
   max-width: 100%;
   cursor: pointer;
   font: inherit;
-  pointer-events: auto; /* <--- Add this */
+  pointer-events: auto;
+  transition: color 0.2s;
 }
 
+
+/* Now Playing Artist - lighter, italic, with a soft glow and spacing */
 .nowPlayingArtist {
-  font-size: 0.98rem;
-  color: #fff;
-  opacity: 0.92;
-  text-transform: lowercase;
+  font-size: 1.15rem;
+  color: #e0e0e0;
+  opacity: 0.95;
   letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-style: italic;
+  font-weight: 400;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.12);
+  margin-bottom: 0.1em;
 }
 
 .nowPlayingArtist a {
-  color: #fff;
-  opacity: 0.92;
+  color: #e0e0e0;
+  opacity: 0.95;
   transition: color 0.2s;
   text-decoration: none;
   cursor: pointer;
+  font-style: italic;
+  font-weight: 400;
 }
 
 .nowPlayingTimeBar {

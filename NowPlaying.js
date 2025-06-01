@@ -224,4 +224,6 @@ async function refreshNowPlaying() {
 window.onload = () => {
   refreshNowPlaying();
   setInterval(refreshNowPlaying, 1000);
+  // Trigger slide-up animation for all sections except navbar
+  setTimeout(() => document.body.classList.add('loaded'), 100);
 };
