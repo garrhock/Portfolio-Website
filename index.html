@@ -11,8 +11,8 @@
   <div id="navbar"></div>
   <script src="navbar.js" defer></script>
 
-  <div class="center-section">
-    <section class="main-box">
+  <div class="home-page">
+    <section class="about-me">
       <div class="social-buttons">
         <a href="https://github.com/garrhock" class="github" target="_blank" aria-label="GitHub">
           <i class="fab fa-github"></i>
@@ -21,14 +21,14 @@
           <i class="fab fa-linkedin-in"></i>
         </a>
       </div>
-      <div class="name">Garrett Hockersmith</div>
-      <div class="email-display">texgeh@gmail.com</div>
-      <div class="location">Melissa, Texas</div>
-      <div class="about">
-        Student @ The University of Texas at Dallas | Pursuing a degree in <span class="highlight">Computer Science</span>.
+      <div class="intro">
+        <span class="hi">Hi, I'm</span>
+        <span class="name">Garrett Hockersmith</span>
       </div>
+      <div class="location">Melissa, Texas</div>
+      <div class="about">I'm a Student @ The University of Texas at Dallas | Pursuing a degree in Computer Science!</div>
     </section>
-    <section class="section">
+    <section class="toolbox">
       <h2>My tools</h2>
       <div class="tech-scroll-section">
         <div class="tech-track">
@@ -50,59 +50,95 @@
         </div>
       </div>
     </section>
-    <section class="section">
-      <h2>Education</h2>
-      <div class="education-list">
-        <div class="education-item">
-          <div class="education-header">
-            <h3 class="school-name">The University of Texas at Dallas</h3>
-            <span class="education-dates">(Fall 2023 - Current)</span>
-          </div>
-          <div class="education-degree">Bachelor of Science in Computer Science</div>
-        </div>
-        <div class="education-item">
-          <div class="education-header">
-            <h3 class="school-name">Collin College</h3>
-            <span class="education-dates">(2021 - 2023)</span>
-          </div>
-          <div class="education-degree">Associate of Applied Science in Computer Systems</div>
-        </div>
-        <div class="education-item">
-          <div class="education-header">
-            <h3 class="school-name">Melissa High School</h3>
-            <span class="education-dates">(2019 - 2023)</span>
-          </div>
-          <div class="education-degree">High School Diploma</div>
-        </div>
-      </div>
-    </section>
-    <script src="disable-animation.js"></script>
-    <section class="section no-border">
-      <div id="nowPlayingCard" class="nowPlayingCard">
-        <div class="nowPlayingContent">
-          <div id="nowPlayingImage" class="nowPlayingImage">
-            <img id="albumImage" crossorigin="anonymous" src="./images/albumCover.png" alt="Album" />
-            <div id="nowPlayingMask" class="nowPlaying-mask">
-              <i class="fas fa-pause"></i>
+    <!-- Timeline Section: Centered line, left/right boxes, connectors, and dots -->
+    <section class="timeline-section">
+      <div class="timeline-container">
+        <div class="timeline-line"></div>
+
+        <!-- Timeline Item (Left) -->
+        <div class="timeline-item left">
+          <div class="timeline-content">
+            <div class="content">
+              <div class="timeline-header">
+                <span class="year">2023</span>
+                <span class="duration">- 2027</span>
+              </div>
+              <div class="timeline-title">Student</div>
+              <div class="timeline-location">
+                <span class="school">University of Texas @ Dallas</span>
+                <span class="separator">•</span>
+                <span class="city-state">Richardson, Texas</span>
+              </div>
+              <div class="about-area">
+                Diving deep into computer science—developing real-world projects, mastering core concepts, and constantly building on my technical and analytical skills.
+              </div>
+              <ul>
+                <li>Data Structures & Algorithms</li>
+                <li>Computer Architecture</li>
+                <li>Systems Programming in Unix and Other Environments</li>
+              </ul>
+              <div class="tags">
+                <span>C</span><span>C++</span><span>Java</span>
+              </div>
             </div>
           </div>
-          <div id="nowPlayingDetails" class="nowPlayingDetails">
-            <div id="nowPlayingTitle" class="nowPlayingTitle"></div>
-            <div id="nowPlayingArtist" class="nowPlayingArtist"></div>
-            <div class="nowPlayingTimeBar">
-              <span class="nowPlayingTimeStart" id="nowPlayingTimeStart"></span>
-              <div class="nowPlayingProgressBar">
-                <div class="nowPlayingProgress"></div>
+        </div>
+
+        <!-- Timeline Item (Right) -->
+        <div class="timeline-item right">
+          <div class="timeline-content">
+            <div class="content">
+              <div class="timeline-header">
+                <span class="year">2021</span>
+                <span class="duration">3 years</span>
               </div>
-              <span class="nowPlayingTimeEnd" id="nowPlayingTimeEnd"></span>
+              <div class="timeline-title">Dual-Credit Program</div>
+              <div class="timeline-location">
+                <span class="school">Collin Community College</span>
+                <span class="separator">•</span>
+                <span class="city-state">McKinney, Texas</span>
+              </div>
+              <div class="about-area">
+                During this time, in addition to my regular curiculuum, I expanded on my technical foundation and strengthened problem-solving skills, preparing me for more advanced computer science studies.
+              </div>
+              <div class="tags">
+                <span>Math</span><span>Physics</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Item (Left) -->
+        <div class="timeline-item left">
+          <div class="timeline-content">
+            <div class="content">
+              <div class="timeline-header">
+                <span class="year">2019</span>
+                <span class="duration">4 years</span>
+              </div>
+              <div class="timeline-title">High School Student</div>
+              <div class="timeline-location">
+                <span class="school">Melissa High School</span>
+                <span class="separator">•</span>
+                <span class="city-state">Melissa, Texas</span>
+              </div>
+              <div class="about-area">
+                First introduction to programming and built a strong foundation in software and hardware.
+              </div>
+              <ul>
+                <li>Computer Science I-III</li>
+                <li>Computer Maintenance</li>
+                <li>Completed a Java snake game</li>
+              </ul>
+              <div class="tags">
+                <span>Java</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
-    <script src="disable-animation.js"></script>
-    <script src="nowPlaying.js"></script>
     <script src="script.js"></script>
   </div>
 </body>
